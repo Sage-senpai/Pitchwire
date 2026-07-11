@@ -1,0 +1,34 @@
+{
+  "name": "pitchwire",
+  "version": "0.1.0",
+  "description": "The live World Cup wire. Reads the match and the market and tells you what just changed.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc",
+    "serve": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "activate": "tsx src/feed/activate.ts",
+    "test:game": "tsx src/engine/game.test.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@coral-xyz/anchor": "^0.30.1",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.0",
+    "axios": "^1.7.9",
+    "better-sqlite3": "^11.7.0",
+    "dotenv": "^16.4.7",
+    "grammy": "^1.32.0",
+    "tweetnacl": "^1.0.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
