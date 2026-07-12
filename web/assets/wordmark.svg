@@ -1,0 +1,8 @@
+<svg width="760" height="180" viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PITCHWIRE">
+  <!-- Teletype wordmark: mono, ink on paper, one amber live dot for the wire. -->
+  <rect width="760" height="180" fill="#EDE6D6"/>
+  <text x="48" y="112" font-family="ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace"
+        font-size="72" font-weight="700" letter-spacing="2" fill="#14110E">PITCHWIRE</text>
+  <circle cx="700" cy="90" r="14" fill="#C6532A"/>
+  <line x1="48" y1="140" x2="712" y2="140" stroke="#9A7B4F" stroke-width="3"/>
+</svg>

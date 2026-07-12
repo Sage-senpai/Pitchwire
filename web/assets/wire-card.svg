@@ -1,0 +1,29 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pitchwire wire card">
+  <!-- The signature artifact: dateline, rule, signal, telemetry. Signal room palette, no gradient. -->
+  <rect width="1200" height="630" fill="#14110E"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#9A7B4F" stroke-width="2" opacity="0.5"/>
+
+  <!-- Wire dateline: real telemetry, in faded mono -->
+  <text x="88" y="150" font-family="ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace"
+        font-size="30" letter-spacing="4" fill="#8A8375">ARLINGTON · 78' · SEQ 4471</text>
+
+  <!-- The rule -->
+  <line x1="88" y1="188" x2="1112" y2="188" stroke="#9A7B4F" stroke-width="2"/>
+
+  <!-- The signal -->
+  <text font-family="ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace"
+        font-size="66" font-weight="700" fill="#EDE6D6">
+    <tspan x="88" y="300">Red card, Morocco.</tspan>
+    <tspan x="88" y="382">The market's already</tspan>
+    <tspan x="88" y="464">swung to <tspan fill="#C6532A">France</tspan>.</tspan>
+  </text>
+
+  <!-- Telemetry footer -->
+  <text x="88" y="560" font-family="ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace"
+        font-size="24" letter-spacing="2" fill="#8A8375">TS 2026-07-18 20:41:07Z · TxLINE World Cup · SL1</text>
+
+  <!-- Wordmark, live dot -->
+  <text x="1112" y="560" text-anchor="end" font-family="ui-monospace, 'JetBrains Mono', Menlo, Consolas, monospace"
+        font-size="26" font-weight="700" letter-spacing="2" fill="#EDE6D6">PITCHWIRE</text>
+  <circle cx="1128" cy="551" r="7" fill="#C6532A"/>
+</svg>

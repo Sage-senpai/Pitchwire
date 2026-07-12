@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pitchwire — the live World Cup wire</title>
+<meta name="description" content="Pitchwire reads the match and the market and tells you what just changed. A Telegram wire for the 2026 World Cup, built on TxLINE live data." />
+<style>
+  :root{
+    --ink:#14110E; --paper:#EDE6D6; --wire:#C6532A;
+    --brass:#9A7B4F; --verdigris:#3F5E54; --faded:#8A8375;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--ink); color:var(--paper); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+    padding:0 20px;
+  }
+  .wrap{max-width:860px; margin:0 auto}
+  a{color:var(--wire)}
+  header{padding:56px 0 8px; display:flex; align-items:center; gap:14px}
+  .mark{font-family:var(--mono); font-weight:700; font-size:clamp(24px,4vw,32px); letter-spacing:2px}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--wire);display:inline-block;
+       box-shadow:0 0 0 0 rgba(198,83,42,.6); animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(198,83,42,.55)}70%{box-shadow:0 0 0 14px rgba(198,83,42,0)}100%{box-shadow:0 0 0 0 rgba(198,83,42,0)}}
+  @media (prefers-reduced-motion:reduce){.dot{animation:none}}
+  .rule{height:1px;background:var(--brass);opacity:.5;border:0;margin:18px 0}
+
+  h1{font-family:var(--mono); font-weight:700; font-size:clamp(30px,6vw,54px);
+     line-height:1.1; letter-spacing:-.5px; margin:28px 0 10px}
+  h1 .swing{color:var(--wire)}
+  .lede{font-size:clamp(17px,2.4vw,20px); color:var(--paper); max-width:60ch; margin:0 0 8px}
+  .sub{color:var(--faded); font-family:var(--mono); font-size:14px; letter-spacing:1px}
+
+  /* The wire card — the signature element, rebuilt crisp in HTML */
+  .card{border:1px solid rgba(154,123,79,.55); padding:26px 28px; margin:34px 0;
+        background:#100E0B}
+  .card .dateline{font-family:var(--mono); color:var(--faded); font-size:14px; letter-spacing:3px}
+  .card .signal{font-family:var(--mono); font-weight:700; font-size:clamp(22px,3.6vw,30px);
+                line-height:1.25; margin:14px 0 16px}
+  .card .signal em{color:var(--wire); font-style:normal}
+  .card .telemetry{font-family:var(--mono); color:var(--faded); font-size:12px; letter-spacing:2px}
+
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin:40px 0}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .cell h3{font-family:var(--mono); font-size:14px; letter-spacing:2px; text-transform:uppercase;
+           color:var(--brass); margin:0 0 6px}
+  .cell p{margin:0; color:var(--paper)}
+
+  .video{position:relative; aspect-ratio:16/9; width:100%; border:1px solid rgba(154,123,79,.55);
+         background:#100E0B; display:flex; align-items:center; justify-content:center; margin:14px 0 8px}
+  .video .play{width:0;height:0;border-left:26px solid var(--wire);
+               border-top:17px solid transparent;border-bottom:17px solid transparent}
+  .video figcaption, .video .cap{position:absolute; bottom:12px; left:14px;
+               font-family:var(--mono); font-size:12px; color:var(--faded); letter-spacing:2px}
+
+  .cta{display:inline-block; font-family:var(--mono); font-weight:700; letter-spacing:1px;
+       background:var(--wire); color:var(--ink); text-decoration:none;
+       padding:14px 22px; margin:8px 0 4px}
+  .cta.ghost{background:transparent; color:var(--paper); border:1px solid var(--brass); margin-left:10px}
+
+  .confirmed{color:var(--verdigris)}
+  footer{border-top:1px solid rgba(154,123,79,.4); margin:56px 0 40px; padding-top:20px;
+          color:var(--faded); font-family:var(--mono); font-size:13px; letter-spacing:1px}
+  section{margin:44px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="mark">PITCHWIRE</span><span class="dot" aria-hidden="true"></span>
+  </header>
+  <p class="sub">EST. FOR THE 2026 WORLD CUP · POWERED BY TxLINE</p>
+  <hr class="rule" />
+
+  <h1>The match and the market,<br/>read down one <span class="swing">wire</span>.</h1>
+  <p class="lede">A fan watching on their phone gets a scoreboard, not a read. Odds move and nobody says why. Pitchwire is the wire — when something happens on the pitch or the market shifts, it sends one clear message on what just changed.</p>
+
+  <!-- The signature: a live read-out, dateline then signal -->
+  <div class="card" aria-label="Example wire read-out">
+    <div class="dateline">ARLINGTON · 78' · SEQ 4471</div>
+    <div class="signal">Red card, Morocco. The market's already swung to <em>France</em>.</div>
+    <div class="telemetry">TS 2026-07-18 20:41:07Z · TxLINE WORLD CUP · SL1</div>
+  </div>
+
+  <section class="grid">
+    <div class="cell">
+      <h3>Reads the play</h3>
+      <p>A goal, a red card, a hard odds move — Pitchwire turns the raw feed into one or two plain sentences a non-trader understands. It explains. It never tells you to bet.</p>
+    </div>
+    <div class="cell">
+      <h3>Reads the market</h3>
+      <p>Every read-out carries the feed's own sequence and timestamp. If the wire goes quiet, it says so — it never dresses a stale number up as live.</p>
+    </div>
+    <div class="cell">
+      <h3>The predict game</h3>
+      <p>Call whether the next stat goes higher. The guess window opens and closes on the server against the feed's own sequence — <span class="confirmed">there is no clock to race and no timer to fake.</span></p>
+    </div>
+    <div class="cell">
+      <h3>Points, never money</h3>
+      <p>Streaks are cosmetic. No buy-ins, no payouts, no wallet holding your funds. The one on-chain step is our own devnet subscription that unlocks the data.</p>
+    </div>
+  </section>
+
+  <section>
+    <h3 style="font-family:var(--mono);letter-spacing:2px;color:var(--brass);text-transform:uppercase;font-size:14px">The live moment</h3>
+    <!-- Drop the demo embed here: replace this .video block with your <iframe> (16:9). -->
+    <figure class="video" style="margin:14px 0">
+      <span class="play" aria-hidden="true"></span>
+      <figcaption>DEMO — RECORDED DURING A LIVE MATCH</figcaption>
+    </figure>
+    <p class="sub">Recorded live over TxLINE World Cup data — /auth/guest/start · /api/token/activate · /api/scores/stream · /api/odds/stream</p>
+  </section>
+
+  <section>
+    <a class="cta" href="https://t.me/PitchwireBot">Open Pitchwire on Telegram</a>
+    <a class="cta ghost" href="https://github.com/Sage-senpai/pitchwire">Read the code</a>
+    <p class="sub" style="margin-top:14px">Replace the handle above with your deployed bot link before submitting.</p>
+  </section>
+
+  <footer>
+    Pitchwire reads and explains. It holds no funds, places no bets, and touches no prediction market. That boundary is deliberate.
+  </footer>
+
+</div>
+</body>
+</html>
