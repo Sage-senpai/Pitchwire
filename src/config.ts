@@ -12,6 +12,9 @@ const EnvSchema = z.object({
 
   // Anthropic (the explanation layer)
   ANTHROPIC_API_KEY: z.string().min(1, "ANTHROPIC_API_KEY is required"),
+  // The explainer is the product — default to the strongest model. Swappable to
+  // a faster tier (e.g. claude-haiku-4-5) for the live demo without touching code.
+  EXPLAINER_MODEL: z.string().default("claude-opus-4-8"),
 
   // TxLINE / Solana — devnet, free World Cup tier
   TXLINE_NETWORK: z.enum(["devnet", "mainnet"]).default("devnet"),

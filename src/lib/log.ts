@@ -1,14 +1,17 @@
-import { config } from "../config.js";
-
 /**
- * A deliberately tiny structured logger. No dependency, no ceremony.
- * Every feed value we log should carry its `seq`/`ts` so a mid-demo oddity
- * can be traced back to the exact feed update that triggered it.
+ * A deliberately tiny structured logger. No dependency, no ceremony — and
+ * deliberately independent of the validated config so it can be used from any
+ * module (and any unit test) without triggering env validation. It reads
+ * LOG_LEVEL straight from the environment with a safe default.
+ *
+ * Every feed value we log should carry its `seq`/`ts` so a mid-demo oddity can
+ * be traced back to the exact feed update that triggered it.
  */
 type Level = "debug" | "info" | "warn" | "error";
 
 const ORDER: Record<Level, number> = { debug: 10, info: 20, warn: 30, error: 40 };
-const threshold = ORDER[config.LOG_LEVEL];
+const envLevel = (process.env.LOG_LEVEL ?? "info") as Level;
+const threshold = ORDER[envLevel] ?? ORDER.info;
 
 function emit(level: Level, msg: string, meta?: Record<string, unknown>): void {
   if (ORDER[level] < threshold) return;
