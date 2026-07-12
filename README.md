@@ -33,10 +33,21 @@ docs/NOTES.md              parking lot for deferred ideas
 
 ## Running
 
+**Full setup runbook: [`SETUP.md`](SETUP.md)** — clone → BotFather → Anthropic key → TxLINE activation → run → deploy, with troubleshooting.
+
+Quick version:
+
 ```bash
 npm install
-cp .env.example .env   # then fill it in
-npx tsx src/index.ts
+cp .env.example .env   # then fill it in (see SETUP.md)
+npm run activate       # one-time: subscribe on devnet, get the API token
+npm run start
 ```
 
-See `docs/01-foundations.md` for environment setup and `docs/02-txline-reference.md` for the one-time TxLINE activation.
+Between matches, replay a finished match through the whole pipeline:
+
+```bash
+npm run replay -- <fixtureId>
+```
+
+See `docs/01-foundations.md` for environment setup and `docs/02-txline-reference.md` for the one-time TxLINE activation detail.
