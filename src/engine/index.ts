@@ -63,6 +63,22 @@ export class Engine extends EventEmitter {
     return this.fixtures.get(fixtureId)?.label ?? `fixture ${fixtureId}`;
   }
 
+  /**
+   * Fixtures a fan can follow now: everything not finished, live ones first.
+   * We deliberately avoid wall-clock "starting soon" math (the feed's StartTime
+   * units are not guaranteed) — live status comes from the feed's own phase.
+   */
+  listMatches(limit = 8): { fixtureId: number; label: string; live: boolean }[] {
+    const out: { fixtureId: number; label: string; live: boolean }[] = [];
+    for (const [id, info] of this.fixtures) {
+      const phase = this.lastPhase.get(id) ?? "unknown";
+      if (phase === "ended") continue;
+      out.push({ fixtureId: id, label: info.label, live: isLivePhase(phase) });
+    }
+    out.sort((a, b) => Number(b.live) - Number(a.live));
+    return out.slice(0, limit);
+  }
+
   /** Latest known value of the game stat for a fixture, for /guess display. */
   currentGameValue(fixtureId: number): number | null {
     const stats = this.lastStats.get(fixtureId);
