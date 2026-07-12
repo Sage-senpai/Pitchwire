@@ -11,7 +11,12 @@ import {
 } from "./types.js";
 
 export * from "./types.js";
-export { getFixtures, getScoreSnapshot, getOddsSnapshot } from "./client.js";
+export {
+  getFixtures,
+  getScoreSnapshot,
+  getOddsSnapshot,
+  getScoresHistorical,
+} from "./client.js";
 export {
   decodeStats,
   decodeOdds,

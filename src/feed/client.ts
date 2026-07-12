@@ -84,4 +84,15 @@ export async function getOddsSnapshot(fixtureId: number): Promise<OddsUpdate[]> 
   return parseArray(OddsUpdateSchema, res.data, "odds");
 }
 
+/**
+ * Full score sequence for a fixture that started 6h–2wk ago. This is the
+ * between-matches testing/demo lever the docs recommend: replay a real sequence
+ * through the decode + engine pipeline without waiting for a live match.
+ */
+export async function getScoresHistorical(fixtureId: number): Promise<ScoreUpdate[]> {
+  const res = await http.get(`/scores/historical/${fixtureId}`);
+  const rows = parseArray(ScoreUpdateSchema, res.data, "historical score");
+  return rows.sort((a, b) => a.seq - b.seq);
+}
+
 export { http as txlineHttp };

@@ -18,6 +18,7 @@ Legend: ✅ done in code · 🔑 needs your credentials/live data · 🚀 needs 
 | Anthropic key in `.env` | 🔑 | `ANTHROPIC_API_KEY`; explainer falls back to templates without it |
 | TxLINE activated (subscribe on devnet + API token) | 🔑 | fund the service wallet, `npm run activate`, paste `TXLINE_API_TOKEN` |
 | Verify **live** World Cup data flows on your target match | 🔑 | test on the first live window, not demo day (see `docs/NOTES.md` open questions) |
+| Verify the whole loop between matches with real data | ✅🔑 | `npm run replay -- <fixtureId>` replays a finished match (started 6h–2wk ago) through decode → explain → game; set `REPLAY_CHAT_ID` to record it in a real chat as a backup demo |
 | Confirm the World Cup `competitionId` against live fixtures | 🔑 | code defaults to 72 and self-verifies by matching the `Competition` name — check the log line at boot |
 | Bot deployed, running, funded, staying up through judging | 🚀 | single always-on Node process (Railway/Fly), not serverless |
 | Landing page deployed; demo video embedded; bot handle updated | 🚀 | `web/index.html`; swap the `t.me/PitchwireBot` links |
