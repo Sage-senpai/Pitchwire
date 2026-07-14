@@ -1,4 +1,4 @@
-import { config } from "./config.js";
+import { assertBotEnv, config } from "./config.js";
 import { log } from "./lib/log.js";
 import { Store } from "./store/db.js";
 import { Engine } from "./engine/index.js";
@@ -17,6 +17,8 @@ const REFRESH_FIXTURES_MS = 10 * 60 * 1000;
 const RENEW_JWT_MS = 5 * 60 * 1000;
 
 async function main(): Promise<void> {
+  assertBotEnv(); // fail loud, at boot, before anything else spins up
+
   const store = new Store(config.DATABASE_PATH);
   const engine = new Engine(store);
   const bot = createBot(config.TELEGRAM_BOT_TOKEN, { store, engine });

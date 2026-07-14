@@ -14,7 +14,14 @@ import { log } from "../lib/log.js";
  * send unreviewed model text to a user during a live match.
  */
 
-const client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
+// Constructed lazily: the setup scripts import this module's siblings without an
+// Anthropic key, and an absent key must degrade to the template, never throw.
+let client: Anthropic | null = null;
+function getClient(): Anthropic | null {
+  if (!config.ANTHROPIC_API_KEY) return null;
+  client ??= new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
+  return client;
+}
 
 const SYSTEM_PROMPT = `You are Pitchwire, a live World Cup wire. You read a match and the betting market and report what just changed, like a telegraph operator who happens to know the data cold.
 
@@ -89,8 +96,10 @@ function buildUserPrompt(input: ExplainInput): string {
 }
 
 export async function explain(input: ExplainInput): Promise<string> {
+  const anthropic = getClient();
+  if (!anthropic) return templatedExplanation(input);
   try {
-    const res = await client.messages.create({
+    const res = await anthropic.messages.create({
       model: config.EXPLAINER_MODEL,
       max_tokens: 200,
       system: SYSTEM_PROMPT,
