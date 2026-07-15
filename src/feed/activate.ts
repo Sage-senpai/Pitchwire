@@ -16,10 +16,17 @@
  * message are taken verbatim from the TxLINE devnet / World Cup docs.
  */
 import * as anchor from "@coral-xyz/anchor";
-import { Connection, Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
+  createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import nacl from "tweetnacl";
@@ -84,6 +91,27 @@ async function subscribeOnChain(
     true, // PDA owner is off-curve
     TOKEN_2022_PROGRAM_ID
   );
+
+  // The subscribe instruction expects the user's TxL token account to already
+  // exist (it is not `init`ed on-chain). For the free tier the balance is 0, so
+  // an empty account is all we need. Create it idempotently.
+  const provider = program.provider as anchor.AnchorProvider;
+  const existing = await provider.connection.getAccountInfo(userTokenAccount);
+  if (!existing) {
+    log.info("Creating user TxL token account (TOKEN_2022)…");
+    const tx = new Transaction().add(
+      createAssociatedTokenAccountInstruction(
+        wallet.publicKey, // payer
+        userTokenAccount, // ata
+        wallet.publicKey, // owner
+        TXL_TOKEN_MINT,
+        TOKEN_2022_PROGRAM_ID,
+        ASSOCIATED_TOKEN_PROGRAM_ID
+      )
+    );
+    const ataSig = await provider.sendAndConfirm(tx, []);
+    log.info("User token account created", { ataSig });
+  }
 
   log.info("Sending subscribe transaction (devnet)…");
   const txSig = await (program.methods as anchor.Program["methods"])

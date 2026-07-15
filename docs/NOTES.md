@@ -18,7 +18,11 @@ Good ideas that are NOT on the critical path. Park them here so they stop compet
 - grammy for the bot. Locked.
 - SQLite for the MVP store. Locked; no Postgres.
 
-## Open questions to resolve early (don't guess)
-- World Cup `competitionId` for the fixtures filter — confirm against the schedule doc before hardcoding.
-- Exact odds payload shape from `/api/odds/stream` — confirm against the OpenAPI YAML before writing the odds decoder.
-- Whether devnet free tier is actually serving live World Cup data during your target match, or whether real-time needs mainnet SL12 — test this on the first available live window, not on demo day.
+## Open questions — RESOLVED against live devnet (2026-07-16)
+- World Cup `competitionId` = **72**. Confirmed live: the fixtures snapshot returns `72 · World Cup`. We still match on the `Competition` name at runtime and log the id, so this is a verified default, not a blind hardcode.
+- Odds payload shape — decoder written against the OpenAPI `OddsPayload` schema (aligned `PriceNames`/`Prices`/`Pct`, `Pct` = demargined StablePrice). Still worth eyeballing live odds values render sensibly during a match.
+- Devnet free tier **is** serving live World Cup data. Snapshot returned 3 WC fixtures (England v Argentina, Spain v Argentina, France v England). No need for mainnet SL12.
+
+## Activation gotcha (learned the hard way)
+- The `subscribe` instruction expects the wallet's TxL **associated token account to already exist** — it is not `init`ed on-chain. Without it you get `AccountNotInitialized (3012)` on `user_token_account`. Fix (now in `feed/activate.ts`): create the TOKEN_2022 ATA idempotently before subscribing. Free tier balance is 0, so an empty ATA is fine.
+- Live service wallet (devnet, throwaway): `7qwHC1Vn2ooewUDBvKN6cPyEukpQmQ59HHqhsDtJ2hxV`. Subscribed successfully; API token is in `.env` (non-expiring).

@@ -50,4 +50,10 @@ Between matches, replay a finished match through the whole pipeline:
 npm run replay -- <fixtureId>
 ```
 
+Devnet service wallet (fund it at https://faucet.solana.com before `npm run activate`):
+
+```
+7qwHC1Vn2ooewUDBvKN6cPyEukpQmQ59HHqhsDtJ2hxV
+```
+
 See `docs/01-foundations.md` for environment setup and `docs/02-txline-reference.md` for the one-time TxLINE activation detail.
