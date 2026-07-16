@@ -20,12 +20,32 @@ No gradient anywhere; the amber does all the emphasis.
 - **`index.html`** — the one-page landing site for the submission link. Self-contained
   (inline CSS, system mono/sans, no external requests), mobile-responsive.
 
+## Deploy to Vercel (static, this folder only)
+
+The landing page is the **only** part that goes to Vercel. The bot is a long-lived
+Node process (SSE), which serverless cannot host, so the bot deploys to Railway/Fly
+instead. Deploying only `web/` also stops Vercel from trying to build the bot.
+
+**CLI (fastest):**
+```bash
+npm i -g vercel
+cd web
+vercel        # first run: link/create the project, accept defaults
+vercel --prod # promote to your production URL
+```
+
+**Dashboard:** New Project, import the repo, then set **Root Directory = `web`** and
+Framework Preset = **Other** (no build command). Deploy. `vercel.json` here sets clean
+URLs and long-cache headers on `/assets`.
+
 ## Before submitting
 
-1. Deploy `index.html` anywhere static (Railway, Netlify, GitHub Pages) — this is the
-   judge-facing link.
+1. Deploy this folder to Vercel (above). That URL is the judge-facing link.
 2. Replace the demo `.video` block with your `<iframe>` embed (16:9), recorded during a
    live match.
-3. Update the Telegram handle in the two `t.me/PitchwireBot` links to your real bot.
+3. The two Telegram links already point to `t.me/thePitchwire_bot` — update if the handle
+   changes.
 4. Set the bot profile in BotFather: name, description, about, commands, and the avatar
    PNG (see `docs/04-bot-setup.md`).
+5. Optional: add an absolute `og:image` in `index.html` (a raster of `wire-card.svg`) so
+   shared links show a designed preview.
