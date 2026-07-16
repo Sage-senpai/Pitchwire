@@ -4,6 +4,9 @@
   "description": "The live World Cup wire. Reads the match and the market and tells you what just changed.",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
@@ -24,13 +27,13 @@
     "better-sqlite3": "^11.7.0",
     "dotenv": "^16.4.7",
     "grammy": "^1.32.0",
+    "tsx": "^4.19.2",
     "tweetnacl": "^1.0.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^22.10.5",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }

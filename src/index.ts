@@ -1,3 +1,4 @@
+import { createServer } from "node:http";
 import { assertBotEnv, config } from "./config.js";
 import { log } from "./lib/log.js";
 import { Store } from "./store/db.js";
@@ -16,6 +17,20 @@ import { createBot, COMMANDS } from "./bot/index.js";
 const REFRESH_FIXTURES_MS = 10 * 60 * 1000;
 const RENEW_JWT_MS = 5 * 60 * 1000;
 
+/**
+ * A tiny health endpoint. Hosts like Railway expect a listening port and use it
+ * for health checks; it also doubles as an uptime ping. It never touches the
+ * bot or feed, so it cannot affect them.
+ */
+function startHealthServer(): void {
+  const port = Number(process.env.PORT);
+  if (!Number.isFinite(port) || port <= 0) return; // only when the host provides one
+  createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ status: "ok", service: "pitchwire", liveData: hasApiToken() }));
+  }).listen(port, () => log.info("Health server listening", { port }));
+}
+
 async function main(): Promise<void> {
   assertBotEnv(); // fail loud, at boot, before anything else spins up
 
@@ -25,6 +40,8 @@ async function main(): Promise<void> {
         "(accurate and in-voice, just less varied). Set the key for LLM phrasing."
     );
   }
+
+  startHealthServer();
 
   const store = new Store(config.DATABASE_PATH);
   const engine = new Engine(store);
