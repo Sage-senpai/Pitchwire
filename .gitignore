@@ -3,4 +3,9 @@ dist/
 .env
 *.log
 .DS_Store
+# SQLite database and its WAL/shared-memory sidecars. These are runtime state
+# (and can hold real user rows) — never commit them.
 data/*.db
+data/*.db-shm
+data/*.db-wal
+data/*.db-journal

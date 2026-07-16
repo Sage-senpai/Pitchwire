@@ -1,0 +1,35 @@
+# Render blueprint. The bot is a long-lived process (SSE), so it runs as a web
+# service, not a cron/serverless function. The health endpoint in src/index.ts
+# binds $PORT, which is what keeps Render's health check (and the free tier's
+# keep-awake ping) happy.
+#
+# Free-tier caveats, honestly:
+#  - The instance sleeps after ~15 min with no HTTP traffic. Point a free uptime
+#    pinger (UptimeRobot etc.) at the service URL every ~10 min to keep it warm
+#    through the judging window.
+#  - The filesystem is ephemeral: SQLite resets on redeploy/restart, so streaks
+#    and watch lists start fresh. Fine for the MVP; a paid disk fixes it.
+services:
+  - type: web
+    name: pitchwire
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: TXLINE_NETWORK
+        value: devnet
+      - key: SOLANA_RPC_URL
+        value: https://api.devnet.solana.com
+      - key: TXLINE_API_ORIGIN
+        value: https://txline-dev.txodds.com
+      - key: DATABASE_PATH
+        value: data/pitchwire.db
+      # Secrets: set these in the Render dashboard, not in this file.
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: TXLINE_API_TOKEN
+        sync: false
