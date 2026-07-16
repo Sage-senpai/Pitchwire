@@ -19,6 +19,13 @@ const RENEW_JWT_MS = 5 * 60 * 1000;
 async function main(): Promise<void> {
   assertBotEnv(); // fail loud, at boot, before anything else spins up
 
+  if (!config.ANTHROPIC_API_KEY) {
+    log.warn(
+      "No ANTHROPIC_API_KEY — read-outs use the built-in templated explainer " +
+        "(accurate and in-voice, just less varied). Set the key for LLM phrasing."
+    );
+  }
+
   const store = new Store(config.DATABASE_PATH);
   const engine = new Engine(store);
   const bot = createBot(config.TELEGRAM_BOT_TOKEN, { store, engine });

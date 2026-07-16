@@ -63,15 +63,13 @@ export const config = loadConfig();
  * them demand credentials they never use is pure friction.
  */
 export function assertBotEnv(): void {
-  const missing: string[] = [];
-  if (!config.TELEGRAM_BOT_TOKEN) missing.push("TELEGRAM_BOT_TOKEN (from @BotFather)");
-  if (!config.ANTHROPIC_API_KEY) missing.push("ANTHROPIC_API_KEY (the explanation layer)");
-  if (missing.length === 0) return;
-
-  console.error(
-    "Pitchwire cannot start — missing required environment:\n" +
-      missing.map((m) => `  - ${m}`).join("\n") +
-      "\n\nSee SETUP.md. Copy .env.example to .env and fill these in."
-  );
-  process.exit(1);
+  // TELEGRAM_BOT_TOKEN is the one true hard requirement — the bot literally
+  // cannot connect to Telegram without it.
+  if (!config.TELEGRAM_BOT_TOKEN) {
+    console.error(
+      "Pitchwire cannot start — missing TELEGRAM_BOT_TOKEN (from @BotFather).\n" +
+        "See SETUP.md. Copy .env.example to .env and fill it in."
+    );
+    process.exit(1);
+  }
 }
