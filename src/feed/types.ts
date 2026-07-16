@@ -32,16 +32,38 @@ export const FixtureSchema = z
   .passthrough();
 export type Fixture = z.infer<typeof FixtureSchema>;
 
-export const ScoreUpdateSchema = z
-  .object({
-    fixtureId: z.number(),
-    seq: z.number(),
-    ts: z.number(),
-    gameState: z.string().optional(),
-    // Map of encoded stat key (as string) -> integer value.
-    stats: z.record(z.string(), z.number()).optional(),
-  })
-  .passthrough();
+/**
+ * Score payloads arrive in two serializations: the SSE stream uses camelCase
+ * (`seq`, `ts`, `stats`, `gameState`), while the REST snapshot uses PascalCase
+ * (`Seq`, `Ts`, `Stats`, `StatusId`) with an unreliable `GameState` ("scheduled"
+ * even at 90'). We normalize both to one internal shape before validating, and
+ * keep `statusId` as the reliable phase signal for the REST format.
+ */
+export const ScoreUpdateSchema = z.preprocess(
+  (raw) => {
+    if (!raw || typeof raw !== "object") return raw;
+    const r = raw as Record<string, unknown>;
+    return {
+      fixtureId: r.fixtureId ?? r.FixtureId,
+      seq: r.seq ?? r.Seq,
+      ts: r.ts ?? r.Ts,
+      gameState: r.gameState ?? r.GameState,
+      statusId: r.statusId ?? r.StatusId,
+      stats: r.stats ?? r.Stats,
+    };
+  },
+  z
+    .object({
+      fixtureId: z.number(),
+      seq: z.number(),
+      ts: z.number(),
+      gameState: z.string().optional(),
+      statusId: z.number().optional(),
+      // Map of encoded stat key (as string) -> integer value.
+      stats: z.record(z.string(), z.number()).optional(),
+    })
+    .passthrough()
+);
 export type ScoreUpdate = z.infer<typeof ScoreUpdateSchema>;
 
 export const OddsUpdateSchema = z

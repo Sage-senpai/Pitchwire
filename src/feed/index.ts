@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import { log } from "../lib/log.js";
 import { getFixtures } from "./client.js";
 import { runStream, type StreamHandle } from "./streams.js";
-import { decodeOdds, decodePhase, decodeStats } from "./decode.js";
+import { decodeOdds, decodePhase, decodeStats, resolvePhase } from "./decode.js";
 import {
   OddsUpdateSchema,
   ScoreUpdateSchema,
@@ -14,6 +14,7 @@ export * from "./types.js";
 export {
   getFixtures,
   getScoreSnapshot,
+  getScoreSequence,
   getOddsSnapshot,
   getScoresHistorical,
 } from "./client.js";
@@ -21,6 +22,7 @@ export {
   decodeStats,
   decodeOdds,
   decodePhase,
+  resolvePhase,
   isLivePhase,
   totalCorners,
   totalStat,
@@ -79,7 +81,7 @@ export class Feed extends EventEmitter {
       fixtureId: u.fixtureId,
       seq: u.seq,
       ts: u.ts,
-      phase: decodePhase(u.gameState),
+      phase: resolvePhase(u.gameState, u.statusId),
       gameStateRaw: u.gameState ?? null,
       stats: decodeStats(u),
     };

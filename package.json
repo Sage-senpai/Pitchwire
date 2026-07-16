@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "activate": "tsx src/feed/activate.ts",
     "replay": "tsx src/replay.ts",
+    "simulate": "tsx src/simulate.ts",
     "test:game": "tsx src/engine/game.test.ts"
   },
   "dependencies": {

@@ -138,6 +138,33 @@ export function decodePhase(gameState: string | undefined | null): GamePhase {
   return "unknown";
 }
 
+/**
+ * The REST snapshot's numeric `StatusId` (its `GameState` string is unreliable —
+ * it reads "scheduled" even at 90'). Observed live: 1 pre-match, 3 halftime,
+ * 4 in-play, 5/100 finished.
+ */
+const STATUS_PHASE: Record<number, GamePhase> = {
+  1: "not_started",
+  2: "first_half",
+  3: "halftime",
+  4: "second_half",
+  5: "ended",
+  6: "extra_time",
+  12: "penalties",
+  100: "ended",
+};
+
+/** Resolve phase preferring a mappable `gameState`, then `statusId`. */
+export function resolvePhase(
+  gameState: string | undefined | null,
+  statusId: number | undefined | null
+): GamePhase {
+  const byState = decodePhase(gameState);
+  if (byState !== "unknown") return byState;
+  if (statusId != null && statusId in STATUS_PHASE) return STATUS_PHASE[statusId];
+  return "unknown";
+}
+
 /** A match is worth watching / predicting only while the ball is in play. */
 export function isLivePhase(phase: GamePhase): boolean {
   return (

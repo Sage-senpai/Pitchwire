@@ -6,8 +6,11 @@ import { Engine, type OutboundMessage } from "./engine/index.js";
 import {
   getFixtures,
   getScoresHistorical,
-  decodePhase,
+  getScoreSequence,
+  resolvePhase,
   decodeStats,
+  totalStat,
+  totalCorners,
   type FeedEvent,
   type Fixture,
   type ScoreUpdate,
@@ -52,10 +55,42 @@ function toFeedEvent(u: ScoreUpdate): FeedEvent {
     fixtureId: u.fixtureId,
     seq: u.seq,
     ts: u.ts,
-    phase: decodePhase(u.gameState),
+    phase: resolvePhase(u.gameState, u.statusId),
     gameStateRaw: u.gameState ?? null,
     stats: decodeStats(u),
   };
+}
+
+/**
+ * Reduce a raw score sequence to the rows that actually move the match: keep a
+ * row only when a tracked total (goals / cards / corners) or the live/ended
+ * phase changes. Non-score events (possession, throw-ins) and empty-stat rows
+ * would otherwise settle rounds on stale zeros.
+ */
+function meaningful(rows: ScoreUpdate[]): ScoreUpdate[] {
+  const out: ScoreUpdate[] = [];
+  let prevSig = "";
+  for (const u of rows) {
+    const s = decodeStats(u);
+    const hasStats = s.length > 0;
+    if (!hasStats) continue;
+    const sig = [
+      totalStat(s, 1), totalStat(s, 2), totalStat(s, 3), totalStat(s, 4),
+      totalStat(s, 5), totalStat(s, 6), totalCorners(s),
+      resolvePhase(u.gameState, u.statusId),
+    ].join(":");
+    if (sig === prevSig) continue;
+    prevSig = sig;
+    out.push(u);
+  }
+  return out;
+}
+
+/** Pull a real match's timeline: /historical first, else the snapshot array. */
+async function loadSequence(fixtureId: number): Promise<ScoreUpdate[]> {
+  const hist = await getScoresHistorical(fixtureId);
+  const rows = hist.length ? hist : await getScoreSequence(fixtureId);
+  return meaningful(rows);
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -63,9 +98,11 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function main(): Promise<void> {
   const fixtureId = Number(process.argv[2]);
   if (!Number.isFinite(fixtureId)) {
-    console.error("Usage: npm run replay -- <fixtureId>");
+    console.error("Usage: npm run replay -- <fixtureId> [homeName] [awayName]");
     process.exit(1);
   }
+  const argHome = process.argv[3];
+  const argAway = process.argv[4];
 
   const store = new Store(":memory:");
   const engine = new Engine(store);
@@ -78,7 +115,12 @@ async function main(): Promise<void> {
     log.warn("Could not fetch fixtures for label (continuing)", { error: String(err) });
   }
   engine.setFixtures([
-    fixture ?? { FixtureId: fixtureId, Participant1: "Home", Participant2: "Away", StartTime: 0 },
+    fixture ?? {
+      FixtureId: fixtureId,
+      Participant1: argHome ?? "Home",
+      Participant2: argAway ?? "Away",
+      StartTime: 0,
+    },
   ]);
 
   // A subscriber must exist or the engine won't spend an explanation.
@@ -106,10 +148,10 @@ async function main(): Promise<void> {
   const fakeFeed = new EventEmitter();
   engine.attach(fakeFeed as unknown as never);
 
-  const history = await getScoresHistorical(fixtureId);
+  const history = await loadSequence(fixtureId);
   if (history.length === 0) {
     console.error(
-      "No historical events for that fixture. It must have started 6h–2wk ago."
+      "No score events for that fixture yet (not started, or no data on this tier)."
     );
     process.exit(1);
   }
