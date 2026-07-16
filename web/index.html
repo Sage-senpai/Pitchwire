@@ -66,12 +66,16 @@
   .cell p{margin:0; color:var(--paper)}
   .cell .confirmed{color:var(--verdigris)}
 
-  .video{position:relative; aspect-ratio:16/9; width:100%; border:1px solid var(--hair);
-         background:var(--panel); display:flex; align-items:center; justify-content:center; margin:14px 0 8px}
-  .video .play{width:0;height:0;border-left:26px solid var(--wire);
-               border-top:17px solid transparent;border-bottom:17px solid transparent}
-  .video figcaption{position:absolute; bottom:12px; left:14px;
-               font-family:var(--mono); font-size:12px; color:var(--faded); letter-spacing:2px}
+  /* Demo reel slot: an intentional "pending" state until the live-match video is
+     embedded. To publish the video, replace the .reel element with a 16:9 <iframe>. */
+  .reel{aspect-ratio:16/9; width:100%; border:1px solid var(--hair); background:var(--panel);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        gap:14px; text-align:center; padding:24px; margin:14px 0 8px}
+  .reel .dot{margin-bottom:2px}
+  .reel-label{font-family:var(--mono); font-weight:700; letter-spacing:4px; color:var(--brass);
+              margin:0; font-size:clamp(15px,2.2vw,18px)}
+  .reel-sub{font-family:var(--mono); color:var(--faded); font-size:13px; letter-spacing:1px;
+            max-width:44ch; margin:0}
 
   .actions{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:8px 0 4px}
   .cta{display:inline-block; font-family:var(--mono); font-weight:700; letter-spacing:1px;
@@ -132,11 +136,12 @@
 
   <section>
     <h3 class="eyebrow">The live moment</h3>
-    <!-- Drop the demo embed here: replace this .video block with your <iframe> (16:9). -->
-    <figure class="video" style="margin:14px 0" aria-label="Demo video, recorded during a live match">
-      <span class="play" aria-hidden="true"></span>
-      <figcaption>DEMO · RECORDED DURING A LIVE MATCH</figcaption>
-    </figure>
+    <!-- Demo reel: replace this whole .reel block with your <iframe> (16:9) once recorded. -->
+    <div class="reel" role="img" aria-label="Demo reel pending, recorded during a live match">
+      <span class="dot" aria-hidden="true"></span>
+      <p class="reel-label">REEL PENDING</p>
+      <p class="reel-sub">The demo lands here, recorded on the wire during a live match.</p>
+    </div>
     <p class="sub">Recorded live over TxLINE World Cup data. /auth/guest/start · /api/token/activate · /api/scores/stream · /api/odds/stream</p>
   </section>
 

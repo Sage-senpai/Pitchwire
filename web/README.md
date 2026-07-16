@@ -41,8 +41,8 @@ URLs and long-cache headers on `/assets`.
 ## Before submitting
 
 1. Deploy this folder to Vercel (above). That URL is the judge-facing link.
-2. Replace the demo `.video` block with your `<iframe>` embed (16:9), recorded during a
-   live match.
+2. Replace the demo `.reel` block (the "REEL PENDING" panel) with your `<iframe>` embed
+   (16:9), recorded during a live match.
 3. The two Telegram links already point to `t.me/thePitchwire_bot` — update if the handle
    changes.
 4. Set the bot profile in BotFather: name, description, about, commands, and the avatar
