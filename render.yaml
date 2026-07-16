@@ -18,6 +18,12 @@ services:
     startCommand: npm run start
     healthCheckPath: /
     envVars:
+      # Pin Node. better-sqlite3 ships prebuilt binaries for LTS releases only;
+      # on a bleeding-edge Node (Render defaulted to 26) there is no prebuild, so
+      # it tries to compile from source and fails against the newer V8 API.
+      # 22.x is LTS, has prebuilds, and matches local.
+      - key: NODE_VERSION
+        value: 22.18.0
       - key: TXLINE_NETWORK
         value: devnet
       - key: SOLANA_RPC_URL
