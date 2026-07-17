@@ -1,14 +1,21 @@
-import { Bot } from "grammy";
+import { Bot, InlineKeyboard } from "grammy";
 import { log } from "../lib/log.js";
 import type { Store } from "../store/db.js";
 import type { Engine, OutboundMessage } from "../engine/index.js";
 import type { BotDeps } from "./deps.js";
+import { getProofAnchor } from "../feed/proof.js";
 import {
   PARSE_MODE,
   explanationMessage,
   gameResultMessage,
   readingPlaceholder,
+  verifyMessage,
 } from "./render.js";
+
+/** Inline "verify this scoreline on-chain" button carried on each read-out. */
+function verifyKeyboard(fixtureId: number, seq: number): InlineKeyboard {
+  return new InlineKeyboard().text("◆ Verify on-chain", `verify:${fixtureId}:${seq}`);
+}
 import { registerStart } from "./commands/start.js";
 import { registerMatches } from "./commands/matches.js";
 import { registerGuess } from "./commands/guess.js";
@@ -40,6 +47,26 @@ export function createBot(token: string, deps: BotDeps): Bot {
   ]) {
     register(bot, deps);
   }
+
+  // Tapping "◆ Verify on-chain" on a read-out: pull the proof for that exact
+  // scoreline (fixture + seq) and post the on-chain anchor. Read-only.
+  bot.callbackQuery(/^verify:(\d+):(\d+)$/, async (ctx) => {
+    const m = ctx.match as RegExpMatchArray;
+    const fixtureId = Number(m[1]);
+    const seq = Number(m[2]);
+    const label = deps.engine.getFixtureLabel(fixtureId);
+    try {
+      const anchor = await getProofAnchor(fixtureId, seq, "1,2");
+      await ctx.answerCallbackQuery();
+      await ctx.reply(verifyMessage(label, anchor), {
+        parse_mode: PARSE_MODE,
+        link_preview_options: { is_disabled: true },
+      });
+    } catch (err) {
+      log.warn("verify callback failed", { fixtureId, seq, error: String(err) });
+      await ctx.answerCallbackQuery({ text: "Couldn't pull the proof just now." });
+    }
+  });
 
   // Error boundary: a handler error must never crash the process or the feed.
   bot.catch((err) => {
@@ -79,6 +106,7 @@ async function deliverExplanation(
     });
     await bot.api.editMessageText(userId, sent.message_id, explanationMessage(msg), {
       parse_mode: PARSE_MODE,
+      reply_markup: verifyKeyboard(msg.fixtureId, msg.seq),
     });
   } catch (err) {
     log.warn("Failed to deliver explanation", { userId, seq: msg.seq, error: String(err) });
