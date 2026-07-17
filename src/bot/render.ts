@@ -121,27 +121,39 @@ export function verifyMessage(
     stats: { key: number; value: number }[];
     eventStatRootHex: string;
     dailyRootPda: string;
-    epochDay: number;
     onChain: boolean;
+    verified: boolean | null;
     explorerUrl: string;
   }
 ): string {
   const goals = a.stats.filter((s) => s.key === 1 || s.key === 2);
-  const score =
-    goals.length === 2 ? `${goals[0].value}–${goals[1].value}` : "current";
+  const score = goals.length === 2 ? `${goals[0].value}–${goals[1].value}` : "current";
   const rootShort = a.eventStatRootHex
     ? `${a.eventStatRootHex.slice(0, 6)}…${a.eventStatRootHex.slice(-6)}`
     : "n/a";
   const pdaShort = `${a.dailyRootPda.slice(0, 4)}…${a.dailyRootPda.slice(-4)}`;
-  const anchor = a.onChain ? "anchored on Solana devnet" : "root account not found";
+
+  const headline =
+    a.verified === true
+      ? "<b>✓ Verified on-chain.</b>"
+      : a.verified === false
+        ? "<b>Proof did not verify.</b>"
+        : "Proof anchored on-chain.";
+  const explain =
+    a.verified === true
+      ? `The Solana program checked the Merkle proof against the day's root and confirmed the <b>${score}</b> scoreline. It's TxLINE's own number, not mine.`
+      : a.verified === false
+        ? `The on-chain check rejected this. Treat it as unconfirmed.`
+        : `The <b>${score}</b> scoreline carries a Merkle proof whose day-root is anchored on Solana devnet.`;
+
   return [
     `<code>${esc(label.toUpperCase())} · PROOF</code>`,
     RULE,
-    `The <b>${score}</b> scoreline is TxLINE's own number, not mine.`,
+    headline,
+    explain,
     "",
     `<code>stat root ${rootShort}</code>`,
     `<code>day-root PDA ${esc(pdaShort)}</code>`,
-    `Merkle proof ${anchor}.`,
     "",
     `<a href="${a.explorerUrl}">See the root on Solana Explorer</a>`,
   ].join("\n");

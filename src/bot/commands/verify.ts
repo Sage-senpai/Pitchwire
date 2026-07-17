@@ -32,7 +32,7 @@ export const registerVerify: Register = (bot, { store, engine }) => {
         await ctx.reply(verifyUnavailable(), { parse_mode: PARSE_MODE });
         return;
       }
-      const anchor = await getProofAnchor(fixtureId, score.seq, "1,2");
+      const anchor = await getProofAnchor(fixtureId, score.seq);
       await ctx.reply(verifyMessage(label, anchor), {
         parse_mode: PARSE_MODE,
         link_preview_options: { is_disabled: true },

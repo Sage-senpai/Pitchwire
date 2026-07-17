@@ -56,7 +56,7 @@ export function createBot(token: string, deps: BotDeps): Bot {
     const seq = Number(m[2]);
     const label = deps.engine.getFixtureLabel(fixtureId);
     try {
-      const anchor = await getProofAnchor(fixtureId, seq, "1,2");
+      const anchor = await getProofAnchor(fixtureId, seq);
       await ctx.answerCallbackQuery();
       await ctx.reply(verifyMessage(label, anchor), {
         parse_mode: PARSE_MODE,
