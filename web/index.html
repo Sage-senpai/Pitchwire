@@ -66,16 +66,10 @@
   .cell p{margin:0; color:var(--paper)}
   .cell .confirmed{color:var(--verdigris)}
 
-  /* Demo reel slot: an intentional "pending" state until the live-match video is
-     embedded. To publish the video, replace the .reel element with a 16:9 <iframe>. */
-  .reel{aspect-ratio:16/9; width:100%; border:1px solid var(--hair); background:var(--panel);
-        display:flex; flex-direction:column; align-items:center; justify-content:center;
-        gap:14px; text-align:center; padding:24px; margin:14px 0 8px}
-  .reel .dot{margin-bottom:2px}
-  .reel-label{font-family:var(--mono); font-weight:700; letter-spacing:4px; color:var(--brass);
-              margin:0; font-size:clamp(15px,2.2vw,18px)}
-  .reel-sub{font-family:var(--mono); color:var(--faded); font-size:13px; letter-spacing:1px;
-            max-width:44ch; margin:0}
+  /* Demo reel: a portrait phone recording, framed in the signal-room aesthetic. */
+  .reel{max-width:320px; margin:14px auto 8px; border:1px solid var(--hair);
+        background:#000; overflow:hidden; line-height:0}
+  .reel video{display:block; width:100%; height:auto; aspect-ratio:590/1280; background:#000}
 
   .actions{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:8px 0 4px}
   .cta{display:inline-block; font-family:var(--mono); font-weight:700; letter-spacing:1px;
@@ -136,13 +130,14 @@
 
   <section>
     <h3 class="eyebrow">The live moment</h3>
-    <!-- Demo reel: replace this whole .reel block with your <iframe> (16:9) once recorded. -->
-    <div class="reel" role="img" aria-label="Demo reel pending, recorded during a live match">
-      <span class="dot" aria-hidden="true"></span>
-      <p class="reel-label">REEL PENDING</p>
-      <p class="reel-sub">The demo lands here, recorded on the wire during a live match.</p>
-    </div>
-    <p class="sub">Recorded live over TxLINE World Cup data. /auth/guest/start · /api/token/activate · /api/scores/stream · /api/odds/stream</p>
+    <figure class="reel">
+      <video controls playsinline preload="metadata" poster="demo-poster.jpg"
+             width="590" height="1280" aria-label="Pitchwire demo: Mexico vs England read-outs">
+        <source src="pitchwire-demo.mp4" type="video/mp4" />
+        Your browser cannot play this video. <a href="pitchwire-demo.mp4">Download it</a>.
+      </video>
+    </figure>
+    <p class="sub">Real TxLINE World Cup data, read through the live pipeline. /auth/guest/start · /api/token/activate · /api/scores/stream · /api/odds/stream</p>
   </section>
 
   <section>
