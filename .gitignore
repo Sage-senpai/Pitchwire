@@ -18,3 +18,4 @@ demo/*
 demo/vo/*
 !demo/vo/.gitkeep
 !demo/build-full.sh
+!demo/build-x.sh
