@@ -22,8 +22,8 @@ Point at the `SEQ` and the timestamp: "That's the feed's own sequence number and
 ## Beat 4 — the game (30s)
 `/guess`. Show the current corners, tap **Higher**. Narrate the fairness while the next update lands: "The guess locks against the feed's own sequence, server-side — there's no clock to race and no way to guess after the fact." Show it settle and the streak tick.
 
-## Beat 5 — how TxLINE powers it (20s)
-Briefly show the seq/ts telemetry and name the endpoints: "Live TxLINE World Cup data over Server-Sent Events — scores stream, odds stream, gated by a one-time Solana devnet subscription." One line, credible.
+## Beat 5 — how TxLINE powers it + the proof (25s)
+Briefly show the seq/ts telemetry and name the endpoints: "Live TxLINE World Cup data over Server-Sent Events — scores stream, odds stream, gated by a one-time Solana devnet subscription." Then tap **◆ Verify on-chain** on a read-out: "And the score isn't just my word — TxLINE anchors a daily Merkle root on Solana. Tap verify and it pulls the proof and links the root on-chain." Show the Solana Explorer link opening. This is the differentiator; it lands hard.
 
 ## Beat 6 — close (10s)
 "A fan-engagement layer that reads the match and the market — it explains, it never tells you to bet." Show the deployed link and the bot handle.

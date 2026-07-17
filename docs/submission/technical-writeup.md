@@ -27,21 +27,24 @@ TxLINE (SSE + REST) → FEED → ENGINE ⇄ STORE(SQLite) → BOT → the fan's 
 
 **Honest freshness.** Every value carries its `seq` and `ts`. We do not own TxLINE's data and don't pretend to — what we own is not introducing our own staleness, so we dedupe on sequence and surface the telemetry rather than dressing an old number up as live.
 
+**On-chain proof of the scoreline (`/verify`).** This uses TxLINE's actual differentiator: the data is off-chain, but a daily Merkle root of every score is anchored on Solana. Tap **◆ Verify on-chain** on any read-out (or send `/verify`) and Pitchwire fetches the Merkle proof for that exact scoreline from `/api/scores/stat-validation`, derives the `daily_scores_roots` PDA for that day, reads it on devnet to confirm the root is anchored, and returns a Solana Explorer link. It is read-only — no transaction, no signing, no custody — so it stays inside the boundary while making the trust story concrete: the number on screen is provably TxLINE's own, not ours.
+
 ## TxLINE endpoints used
 
 - `POST /auth/guest/start` — guest JWT
 - `POST /api/token/activate` — activate the API token after the on-chain subscribe
-- `GET /api/fixtures/snapshot` — fixtures (filtered to the World Cup competition)
-- `GET /api/scores/snapshot/{fixtureId}` — current score state
+- `GET /api/fixtures/snapshot` — fixtures, filtered to the World Cup competition (`competitionId=72`); `startEpochDay` pulls finished matches for between-window testing
+- `GET /api/scores/snapshot/{fixtureId}` — the full score sequence for a fixture (returns the whole event array, not just the latest)
 - `GET /api/scores/stream` — live scores over SSE
 - `GET /api/odds/stream` — live odds over SSE (StablePrice, demargined `Pct`)
+- `GET /api/scores/stat-validation` — the Merkle proof behind `/verify`
 - Soccer stat encoding: `key = period_prefix + base_key`; base keys 7/8 (corners) drive the game.
 
-The one on-chain action is a single `subscribe` transaction signed by our own service wallet on Solana **devnet** (free World Cup tier, Service Level 1). No user funds are ever held, moved, or signed for.
+The only on-chain write is a single `subscribe` transaction signed by our own service wallet on Solana **devnet** (free World Cup tier, Service Level 1). `/verify` additionally *reads* the `daily_scores_roots` PDA. No user funds are ever held, moved, or signed for.
 
 ## The trust story
 
-Every displayed value carries its sequence number and timestamp; we dedupe on sequence so a reconnect that replays events never double-fires. TxLINE's own on-chain proofs exist as the authenticity backstop — we don't validate proofs in the MVP, but the sequence-and-timestamp discipline means Pitchwire never adds staleness of its own.
+Every displayed value carries its sequence number and timestamp; we dedupe on sequence so a reconnect that replays events never double-fires. And the authenticity we don't own — that's TxLINE's — `/verify` surfaces directly: the on-chain Merkle root that backs the number, with a Solana Explorer link a judge can click. Pitchwire adds no staleness of its own, and proves the rest is genuine rather than asking you to trust it.
 
 ## Stack
 
