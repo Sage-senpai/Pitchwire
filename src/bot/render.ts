@@ -110,6 +110,47 @@ export function streakMessage(current: number, best: number): string {
 
 export const STOPPED = "Off the wire. Nothing more from me until you're back.";
 
+/**
+ * The proof read-out. Shows that a scoreline is TxLINE's own number, backed by a
+ * Merkle proof whose day-root is anchored on Solana. Honest framing: we surface
+ * the proof and its on-chain anchor, we don't claim to have re-derived the tree.
+ */
+export function verifyMessage(
+  label: string,
+  a: {
+    stats: { key: number; value: number }[];
+    eventStatRootHex: string;
+    dailyRootPda: string;
+    epochDay: number;
+    onChain: boolean;
+    explorerUrl: string;
+  }
+): string {
+  const goals = a.stats.filter((s) => s.key === 1 || s.key === 2);
+  const score =
+    goals.length === 2 ? `${goals[0].value}–${goals[1].value}` : "current";
+  const rootShort = a.eventStatRootHex
+    ? `${a.eventStatRootHex.slice(0, 6)}…${a.eventStatRootHex.slice(-6)}`
+    : "n/a";
+  const pdaShort = `${a.dailyRootPda.slice(0, 4)}…${a.dailyRootPda.slice(-4)}`;
+  const anchor = a.onChain ? "anchored on Solana devnet" : "root account not found";
+  return [
+    `<code>${esc(label.toUpperCase())} · PROOF</code>`,
+    RULE,
+    `The <b>${score}</b> scoreline is TxLINE's own number, not mine.`,
+    "",
+    `<code>stat root ${rootShort}</code>`,
+    `<code>day-root PDA ${esc(pdaShort)}</code>`,
+    `Merkle proof ${anchor}.`,
+    "",
+    `<a href="${a.explorerUrl}">See the root on Solana Explorer</a>`,
+  ].join("\n");
+}
+
+export function verifyUnavailable(): string {
+  return "Couldn't pull the on-chain proof just now. The wire's still honest — seq and ts are on every read.";
+}
+
 function cap(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }

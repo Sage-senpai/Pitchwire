@@ -14,6 +14,7 @@ import { registerMatches } from "./commands/matches.js";
 import { registerGuess } from "./commands/guess.js";
 import { registerStreak } from "./commands/streak.js";
 import { registerStop } from "./commands/stop.js";
+import { registerVerify } from "./commands/verify.js";
 
 /** The command list registered with BotFather so they autocomplete. */
 export const COMMANDS = [
@@ -22,6 +23,7 @@ export const COMMANDS = [
   { command: "watch", description: "Follow a live match" },
   { command: "guess", description: "Play the next-stat game" },
   { command: "streak", description: "See your run" },
+  { command: "verify", description: "Prove the score is on-chain" },
   { command: "stop", description: "Leave the wire" },
 ];
 
@@ -33,6 +35,7 @@ export function createBot(token: string, deps: BotDeps): Bot {
     registerMatches,
     registerGuess,
     registerStreak,
+    registerVerify,
     registerStop,
   ]) {
     register(bot, deps);
