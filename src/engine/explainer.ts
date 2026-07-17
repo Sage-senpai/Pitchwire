@@ -29,6 +29,7 @@ Voice: clipped, certain, never padded. Short declaratives. Present tense, active
 
 Absolute rules:
 - Report only what the input states. Never invent a scoreline, a player, a minute, or a market number that is not given to you.
+- Mention the betting market ONLY when the input gives you an explicit "Market:" line. If there is no market data in the input, do not mention the market, the odds, or what the market thinks in any way. Just report the on-pitch event. Do not speculate about how the market might react.
 - You describe what the data shows and what the market is doing. You NEVER advise anyone to place a bet, back a team, or stake anything. Never use "bet", "back", "tip", "lock", "value", "guaranteed", or "sure thing".
 - No hype. No "HUGE", no "massive", no exclamation stacks.
 - One or two sentences. No preamble, no reasoning, no sign-off. Output only the sentences a fan reads.`;
@@ -63,12 +64,18 @@ export interface ExplainInput {
 }
 
 /** Validate model output; return the text if clean, else null. */
-function validate(text: string): string | null {
+function validate(text: string, hasMarketData: boolean): string | null {
   const t = text.trim();
   if (!t) return null;
   if (t.length > MAX_LEN) return null;
   if (BANNED.some((re) => re.test(t))) {
     log.warn("Explainer output tripped banned-phrase guard; using fallback");
+    return null;
+  }
+  // Never let the model invent market commentary when no odds were provided.
+  // Reporting on "the market" with no market input is a fabricated signal.
+  if (!hasMarketData && /\b(market|odds)\b/i.test(t)) {
+    log.warn("Explainer invented market talk with no odds data; using fallback");
     return null;
   }
   return t;
@@ -88,10 +95,17 @@ function buildUserPrompt(input: ExplainInput): string {
     `Phase: ${input.phaseLabel}.`,
     `What just changed: ${input.fact}`,
   ];
-  if (input.oddsFact) lines.push(`Market: ${input.oddsFact}`);
-  lines.push(
-    "Write one or two sentences explaining what happened and, if the market moved, what it is now signalling."
-  );
+  if (input.oddsFact) {
+    lines.push(`Market: ${input.oddsFact}`);
+    lines.push(
+      "Write one or two sentences: what happened on the pitch, and what the market move signals."
+    );
+  } else {
+    lines.push("No market data provided.");
+    lines.push(
+      "Write one or two sentences on what just happened on the pitch. Do not mention the market or odds at all."
+    );
+  }
   return lines.join("\n");
 }
 
@@ -110,7 +124,7 @@ export async function explain(input: ExplainInput): Promise<string> {
       .map((b) => b.text)
       .join("")
       .trim();
-    const clean = validate(text);
+    const clean = validate(text, Boolean(input.oddsFact));
     if (clean) return clean;
   } catch (err) {
     log.warn("Explainer LLM call failed; using fallback", { error: String(err) });
